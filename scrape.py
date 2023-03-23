@@ -57,7 +57,7 @@ def process(thread_id):
     lock.acquire()
     processed += 1
     lock.release()
-    print(thread_id, "processed", processed, "of", TOTAL, 100 * float(processed) / TOTAL, "% in", time.time() - GLOBAL_START, "seconds")
+    print(thread_id, "processed", processed, "of", TOTAL, 100 * float(processed) / TOTAL, "% in", time.time() - GLOBAL_START, "seconds", "chunkfile", sys.argv[1])
 
 def initialize(start):
     curr = start
