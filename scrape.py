@@ -5,7 +5,11 @@ Reset scraping: rm *.html worker*
 """
 
 from threading import Thread
-import time, re, requests, os, sys
+import time, re, requests, os, sys, threading
+
+lock = threading.Lock()
+processed = 0
+TOTAL = 0
 
 NUM_WORKERS = 10
 
@@ -46,10 +50,14 @@ def scrape(thread_url):
 
 
 def process(thread_id):
+    global processed, TOTAL, lock
     next = "https://www.dpreview.com/forums/thread/" + str(thread_id)
     while next is not None:
         next = scrape(next)
-
+    lock.acquire()
+    processed += 1
+    lock.release()
+    print(thread_id, "processed", processed, "of", TOTAL, 100 * float(processed) / TOTAL, "% in", time.time() - GLOBAL_START, "seconds")
 
 def initialize(start):
     curr = start
@@ -75,6 +83,7 @@ except:
     print("Usage: python scrape.py [file], file has one thread ID per line to scrape")
 
 to_process = open(chunkfile).read().splitlines()
+TOTAL = len(to_process)
 # assign jobs to threads
 chunks = [to_process[x:x+int(len(to_process)/NUM_WORKERS)] for x in range(0, len(to_process), int(len(to_process)/NUM_WORKERS))]
 
