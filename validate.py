@@ -28,6 +28,8 @@ def validate(thread):
         num_valid += 1
     else:
         num_invalid += 1
+    if not valid:
+        open("missing", "a").write(thread + "\n")
     print(num_valid, num_invalid)
     return valid
 
